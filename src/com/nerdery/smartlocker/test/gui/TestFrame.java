@@ -25,8 +25,11 @@ public class TestFrame extends JFrame implements Observer {
 
     public TestFrame() {
         initComponents();
-        try {
+        initChannel();
+    }
 
+    private void initChannel() {
+        try {
             client = new TestClient();
             client.addObserver(this);
             output.append("Client Channel Established \n");
@@ -58,6 +61,7 @@ public class TestFrame extends JFrame implements Observer {
 
         JPanel textPanel = new JPanel();
         textPanel.setSize(new Dimension(FRAME_WIDTH - 10, 200));
+        textPanel.setLayout(new BorderLayout());
 
         // Initialize components
         commandList = new JComboBox(Command.values());
@@ -93,7 +97,7 @@ public class TestFrame extends JFrame implements Observer {
 
         buttonPanel.add(sendButton);
 
-        textPanel.add(sp);
+        textPanel.add(sp, BorderLayout.CENTER);
 
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
         getContentPane().add(fieldPanel);
