@@ -22,7 +22,7 @@ public class Network {
      *      A byte array containing all information provided and a checksum
      */
     public static byte[] packageCommand(Command command, int... args) {
-        int totalLength = 3 + args.length; //length + command + arg.length + checksum
+        int totalLength = 2 + args.length; //command + arg.length + checksum
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         bos.write(totalLength);

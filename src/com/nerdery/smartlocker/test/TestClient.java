@@ -4,9 +4,14 @@ import com.nerdery.smartlocker.util.Command;
 import com.nerdery.smartlocker.util.Network;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 
 /**
@@ -15,16 +20,16 @@ import java.util.Observable;
 public class TestClient extends Observable {
 
     private DatagramChannel channel;
-
-    private InetSocketAddress serverAddress;
-
     private Thread listenerThread;
+    private InetSocketAddress broadcastAddress = new InetSocketAddress("255.255.255.255", Network.SERVER_PORT);
+    private List<SocketAddress> boardAddresses;
 
     public TestClient() throws IOException {
+        boardAddresses = new ArrayList<>();
         channel = DatagramChannel.open();
-        serverAddress = new InetSocketAddress(Network.SERVER_HOST, Network.SERVER_PORT);
+        channel.socket().setBroadcast(true);
 
-        initializeListener();
+        listenerThread = createListenerThead();
         listenerThread.start();
     }
 
@@ -40,23 +45,25 @@ public class TestClient extends Observable {
      */
     public int send(byte[] messageArray) throws IOException {
         ByteBuffer messageBuffer = ByteBuffer.wrap(messageArray);
-        return channel.send(messageBuffer, serverAddress);
+//        return channel.send(messageBuffer, serverAddress);
+        return 1;
     }
 
-    private void initializeListener() {
 
-        if(listenerThread != null) {
-            listenerThread.interrupt();
-        }
+    public int broadcast(byte[] messageArray) throws IOException {
+        ByteBuffer messageBuffer = ByteBuffer.wrap(messageArray);
+        return channel.send(messageBuffer, broadcastAddress);
+    }
 
-        listenerThread = new Thread(() -> {
+    private Thread createListenerThead() {
+
+        return new Thread(() -> {
             while(!Thread.currentThread().isInterrupted()) {
                 try {
-                    ByteBuffer buffer = ByteBuffer.allocate(12);
+                    ByteBuffer buffer = ByteBuffer.allocate(64);
                     buffer.clear();
 
                     channel.receive(buffer);
-                    System.out.println("ASDFASDF");
                     setChanged();
                     notifyObservers(buffer);
 

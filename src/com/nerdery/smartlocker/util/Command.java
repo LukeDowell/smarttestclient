@@ -2,6 +2,8 @@ package com.nerdery.smartlocker.util;
 
 public enum Command {
 
+    BROADCAST(0x14),
+
     /** Asks for the status of every door */
     ALL_DOOR_STATUS(0x01),
 
